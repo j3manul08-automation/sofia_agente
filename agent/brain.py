@@ -18,11 +18,23 @@ from openai import AsyncOpenAI
 load_dotenv()
 logger = logging.getLogger("agentkit")
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Si falta la key, el cliente no se crea pero el servidor igual arranca: el health check
+# lo muestra, en vez de reventar en el import y dejar a Render reiniciando a ciegas.
+_API_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
+client = AsyncOpenAI(api_key=_API_KEY) if _API_KEY else None
 
 # El modelo se cambia desde .env, sin tocar el codigo. No hay default a proposito:
 # es una decision del dueño del negocio (costo vs. calidad), no del codigo.
 MODELO = (os.getenv("OPENAI_MODEL") or "").strip()
+
+
+def problema_de_configuracion() -> str | None:
+    """Que le falta a la configuracion de OpenAI, o None si esta completa."""
+    if client is None:
+        return "Falta OPENAI_API_KEY"
+    if not MODELO:
+        return "Falta OPENAI_MODEL"
+    return None
 
 # Esfuerzo de razonamiento, solo para modelos que razonan. Es un bot de respuestas
 # cortas: con esfuerzo bajo contesta mas rapido y mas barato.
@@ -197,8 +209,9 @@ async def generar_respuesta(mensaje: str, historial: list[dict]) -> tuple[str, b
     if not mensaje or len(mensaje.strip()) < 2:
         return obtener_mensaje_fallback(), False
 
-    if not MODELO:
-        logger.error("OPENAI_MODEL no esta configurado en el .env")
+    problema = problema_de_configuracion()
+    if problema:
+        logger.error(f"No se puede llamar a OpenAI: {problema}")
         return obtener_mensaje_error(), False
 
     mensajes = [{"role": m["role"], "content": m["content"]} for m in historial]

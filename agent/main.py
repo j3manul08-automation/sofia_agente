@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 
-from agent.brain import generar_respuesta, obtener_mensaje_error
+from agent.brain import generar_respuesta, obtener_mensaje_error, problema_de_configuracion
 from agent.memory import (
     guardar_mensaje,
     inicializar_db,
@@ -81,6 +81,10 @@ async def lifespan(app: FastAPI):
     else:
         logger.error(f"Proveedor de WhatsApp NO configurado: {error_configuracion}")
 
+    problema_ia = problema_de_configuracion()
+    if problema_ia:
+        logger.error(f"OpenAI NO configurado: {problema_ia}. El agente va a responder con el mensaje de error.")
+
     yield
 
 
@@ -95,11 +99,13 @@ async def health_check():
 
     # Se responde 200 aunque las credenciales esten mal, para que Render no marque el
     # deploy como caido y puedas leer el diagnostico. El detalle esta en el cuerpo.
+    problema_ia = problema_de_configuracion()
     return {
-        "status": "ok" if estado_proveedor["ok"] else "degradado",
+        "status": "ok" if estado_proveedor["ok"] and not problema_ia else "degradado",
         "service": "agentkit",
         "proveedor": proveedor.__class__.__name__ if proveedor else None,
         "conexion": estado_proveedor,
+        "ia": problema_ia or "ok",
     }
 
 
