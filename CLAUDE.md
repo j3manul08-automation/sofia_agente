@@ -33,7 +33,7 @@ Cuando generes el agente, SIEMPRE usa estas tecnologías:
 |-----------|-----------|-------|
 | Runtime | Python 3.11+ | Verificar en Fase 1 |
 | Servidor | FastAPI + Uvicorn | Webhook handler genérico |
-| IA | Anthropic Claude API | Modelo default: `claude-sonnet-5` (configurable) |
+| IA | OpenAI API (Responses) | Modelo definido en `OPENAI_MODEL` (sin default) |
 | WhatsApp | Zernio / Meta Cloud API | El usuario elige durante el setup |
 | Base de datos | SQLite (local) / PostgreSQL (prod) | Via SQLAlchemy |
 | Variables | python-dotenv | NUNCA hardcodear keys |
