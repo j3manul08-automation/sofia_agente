@@ -18,7 +18,7 @@ def obtener_proveedor() -> ProveedorWhatsApp:
 
     Ojo: esto NO se ejecuta al importar el modulo. Si la configuracion esta mal, el
     servidor igual tiene que arrancar y contarlo en el health check, en vez de morirse
-    en el import y dejar a Railway reiniciando a ciegas.
+    en el import y dejar a Render reiniciando a ciegas.
     """
     proveedor = os.getenv("WHATSAPP_PROVIDER", "").strip().lower()
 

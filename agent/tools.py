@@ -26,7 +26,7 @@ logger = logging.getLogger("agentkit")
 CARPETA_KNOWLEDGE = Path("knowledge")
 
 # Donde se guardan las solicitudes, una por linea en formato JSON.
-# Ojo: en Railway el disco del contenedor es efimero. Para produccion conviene
+# Ojo: en Render el disco del contenedor es efimero. Para produccion conviene
 # pasar esto a la base de datos o a una planilla.
 ARCHIVO_SOLICITUDES = Path("solicitudes.jsonl")
 

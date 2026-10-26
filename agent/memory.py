@@ -23,7 +23,7 @@ logger = logging.getLogger("agentkit")
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./agentkit.db")
 
-# Railway entrega la URL de PostgreSQL con el esquema "postgresql://" (o "postgres://").
+# Render entrega la URL de PostgreSQL con el esquema "postgresql://" (o "postgres://").
 # SQLAlchemy en modo asincrono necesita que el driver sea explicito.
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)

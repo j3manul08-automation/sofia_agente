@@ -51,7 +51,7 @@ PORT = int(os.getenv("PORT", "8000"))
 _candados: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
 # Si la configuracion esta mal, guardamos el error y lo mostramos en el health check,
-# en vez de reventar en el import y dejar a Railway reiniciando el contenedor a ciegas.
+# en vez de reventar en el import y dejar a Render reiniciando el contenedor a ciegas.
 proveedor = None
 error_configuracion: str | None = None
 try:
@@ -89,11 +89,11 @@ app = FastAPI(title="AgentKit — WhatsApp AI Agent", version="2.0.0", lifespan=
 
 @app.get("/")
 async def health_check():
-    """Endpoint de salud para Railway y monitoreo."""
+    """Endpoint de salud para Render y monitoreo."""
     if error_configuracion:
         return {"status": "error", "service": "agentkit", "detalle": error_configuracion}
 
-    # Se responde 200 aunque las credenciales esten mal, para que Railway no marque el
+    # Se responde 200 aunque las credenciales esten mal, para que Render no marque el
     # deploy como caido y puedas leer el diagnostico. El detalle esta en el cuerpo.
     return {
         "status": "ok" if estado_proveedor["ok"] else "degradado",
